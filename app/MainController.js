@@ -70,8 +70,6 @@
   }
 
 
-
-
   function scheduleCycle() {
     self.requestAnimationFrame(cycle);
   }

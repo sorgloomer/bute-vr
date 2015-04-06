@@ -1,27 +1,57 @@
 (function(self, document, Date, THREE, dat, Leap, Scene, Watcher) {
-  var canvas, scene, camera, renderer, datgui;
-  var startTime;
 
-  var controller = null;
-
-  function notifySize(w, h) {
-    if (controller) controller.resize(w, h);
-    renderer.setSize(w, h);
+  function App() {
+    this.controller = null;
+    this.renderer = null;
+    this.canvas = null;
+    this.datGui = null;
+    this.startTime = 0;
   }
+  App.prototype.notifyResize = function(w, h) {
+    if (this.controller) this.controller.resize(w, h);
+    if (this.renderer) this.renderer.setSize(w, h);
+  };
+  App.prototype.init = function() {
+    this.canvas = document.getElementById('main-canvas');
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+
+    this.controller = new CalibrateController(this.renderer, this);
+    this.setStatus('Calibrating');
+  };
+  App.prototype.setStatus = function(status) {
+    var statusBar = document.getElementById('status-bar');
+    statusBar.innerText = status;
+  };
+  App.prototype.leapFrame = function(frame, time) {
+    if (this.controller) this.controller.leapFrame(frame, time);
+  };
+  App.prototype.update = function(time) {
+    if (this.controller && this.controller.update) this.controller.update(time);
+  };
+  App.prototype.render = function (time) {
+    if (this.controller && this.controller.presenter) this.controller.presenter.render(time);
+  };
+  App.prototype.start = function() {
+    this.startTime = Date.now();
+  };
+  App.prototype.time = function() {
+    return (Date.now() - this.startTime) * 0.001;
+  };
+
+  App.prototype.notifyCalibrated = function(transform) {
+
+  };
+
+  var app = new App();
 
   function onWindowResize() {
-    notifySize(self.innerWidth, self.innerHeight);
+    app.notifyResize(self.innerWidth, self.innerHeight);
   }
 
+
   function init() {
-
-    canvas = document.getElementById('main-canvas');
-    renderer = new THREE.WebGLRenderer({ canvas: canvas });
-
-    controller = new CalibrateController(renderer);
-
+    app.init();
     onWindowResize();
-
     self.addEventListener('resize', onWindowResize, false);
 
     /*
@@ -40,8 +70,7 @@
 
 
     Leap.loop(function(frame) {
-      var time = (Date.now() - startTime) * 0.001;
-      if (controller && controller.leapFrame) controller.leapFrame(frame, time);
+      app.leapFrame(frame, app.time());
       /*
       var hand = frame.hands[0];
       if (hand) {
@@ -52,14 +81,6 @@
     });
   }
 
-  function update(time) {
-    if (controller && controller.update) controller.update(time);
-  }
-
-  function render(time) {
-    if (controller && controller.render) controller.render(time);
-  }
-
 
 
   function scheduleCycle() {
@@ -68,14 +89,14 @@
   function cycle() {
     Watcher.digest();
     scheduleCycle();
-    var time = (Date.now() - startTime) * 0.001;
-    update(time);
-    render(time);
+    var time = app.time();
+    app.update(time);
+    app.render(time);
   }
   function start() {
     init();
     scheduleCycle();
-    startTime = Date.now();
+    app.start();
   }
   start();
 })(self, document, Date, THREE, dat, Leap, Scene, Watcher);

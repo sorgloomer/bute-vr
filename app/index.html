@@ -17,12 +17,24 @@
     #main-canvas {
       display: flex;
       width: 100%;
-
+    }
+    #status-bar {
+      display: flex;
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      background: transparent;
+      font-size: 24px;
+      color: #ff8;
+    }
+    body {
+      background-color: black;
     }
   </style>
 </head>
 <body>
   <div id="fullscreen">
+    <div id="status-bar">Loading...</div>
     <canvas id="main-canvas"></canvas>
   </div>
 
@@ -30,9 +42,20 @@
   <script src="lib/three.js"></script>
   <script src="lib/AnaglyphEffect.js"></script>
   <script src="lib/dat.gui.js"></script>
+
+  <script src="utils/extend.js"></script>
+  <script src="utils/vec3.js"></script>
+  <script src="utils/mat3.js"></script>
+  <script src="utils/mat4.js"></script>
+  <script src="utils/Watcher.js"></script>
+
+  <script src="base/BaseController.js"></script>
+  <script src="calibrate/CalibratePresenter.js"></script>
+  <script src="calibrate/CalibrateViewmodel.js"></script>
+  <script src="calibrate/CalibrateController.js"></script>
+
   <script src="Scene.js"></script>
-  <script src="CalibrateController.js"></script>
-  <script src="Watcher.js"></script>
+
   <script src="app.js"></script>
 </body>
 </html>
