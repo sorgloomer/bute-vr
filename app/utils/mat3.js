@@ -6,6 +6,14 @@ var mat3 = (function() {
     for (var i = 0; i < ELEMENTS; i++) to[i] = m[i];
     return to;
   }
+  function setIdentity(to) {
+    to[ 0] = 1; to[ 1] = 0; to[ 2] = 0;
+    to[ 3] = 0; to[ 4] = 1; to[ 5] = 0;
+    to[ 6] = 0; to[ 7] = 0; to[ 8] = 1;
+    return to;
+  }
+
+
   function clone(m) {
     return set(create(), m);
   }
@@ -109,6 +117,7 @@ var mat3 = (function() {
     create: create,
     array: array,
     set: set,
+    setIdentity: setIdentity,
     clone: clone,
 
     vecmul: vecmul,

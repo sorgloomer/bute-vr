@@ -20,11 +20,25 @@ var mat4 = (function() {
     return res;
   }
 
+  function setIdentity(to) {
+    return setScaleS(to, 1);
+  }
+
   function setRT(to, R, T) {
     to[ 0] = R[0]; to[ 1] = R[1]; to[ 2] = R[2]; to[ 3] = 0;
     to[ 4] = R[3]; to[ 5] = R[4]; to[ 6] = R[5]; to[ 7] = 0;
     to[ 8] = R[6]; to[ 9] = R[7]; to[10] = R[8]; to[11] = 0;
     to[12] = T[0]; to[13] = T[1]; to[14] = T[2]; to[15] = 1;
+    return to;
+  }
+  function setScaleS(to, s) {
+    return setScaleXYZ(to, s, s, s);
+  }
+  function setScaleXYZ(to, x, y, z) {
+    to[ 0] = x; to[ 1] = 0; to[ 2] = 0; to[ 3] = 0;
+    to[ 4] = 0; to[ 5] = y; to[ 6] = 0; to[ 7] = 0;
+    to[ 8] = 0; to[ 9] = 0; to[10] = z; to[11] = 0;
+    to[12] = 0; to[13] = 0; to[14] = 0; to[15] = 1;
     return to;
   }
 
@@ -63,6 +77,26 @@ var mat4 = (function() {
   }
   function lmul(a, b) {
     return mul(a, a, b);
+  }
+
+
+  function transpose(to, m) {
+    to[ 0] = m[ 0]; to[ 1] = m[ 4]; to[ 2] = m[ 8]; to[ 3] = m[12];
+    to[ 4] = m[ 1]; to[ 5] = m[ 5]; to[ 6] = m[ 9]; to[ 7] = m[13];
+    to[ 8] = m[ 2]; to[ 9] = m[ 6]; to[10] = m[10]; to[11] = m[14];
+    to[12] = m[ 3]; to[13] = m[ 7]; to[14] = m[11]; to[15] = m[15];
+    return to;
+  }
+  function ltranspose(m) {
+    var tmp;
+    tmp = m[ 1 ]; m[ 1 ] = m[ 4 ]; m[ 4 ] = tmp;
+    tmp = m[ 2 ]; m[ 2 ] = m[ 8 ]; m[ 8 ] = tmp;
+    tmp = m[ 6 ]; m[ 6 ] = m[ 9 ]; m[ 9 ] = tmp;
+
+    tmp = m[ 3 ]; m[ 3 ] = m[ 12 ]; m[ 12 ] = tmp;
+    tmp = m[ 7 ]; m[ 7 ] = m[ 13 ]; m[ 13 ] = tmp;
+    tmp = m[ 11 ]; m[ 11 ] = m[ 14 ]; m[ 14 ] = tmp;
+    return m;
   }
 
 
@@ -121,6 +155,9 @@ var mat4 = (function() {
 
     set: set,
     setRT: setRT,
+    setScaleS: setScaleS,
+    setScaleXYZ: setScaleXYZ,
+    setIdentity: setIdentity,
 
     mul: mul,
     umul: umul,
@@ -129,6 +166,10 @@ var mat4 = (function() {
     uinvert: uinvert,
     linvert: linvert,
     invert: invert,
+
+    transpose: transpose,
+    ltranspose: ltranspose,
+
     det: det,
 
     vecmul: vecmul,

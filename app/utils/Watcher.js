@@ -1,5 +1,24 @@
 var Watcher = (function(){
-  function on(obj, prop, fn) {
+
+  function Watcher() {
+    this.watches = new Set();
+    this.maxDigestCycles = 50;
+  }
+  Watcher.prototype.digest = function digest() {
+    var changed;
+    for (var i = 0; i < this.maxDigestCycles; ++i) {
+      changed = false;
+      this.watches.forEach(changer);
+      if (!changed) return;
+    }
+    console.warn("Digest didn't settle");
+    function changer(w) {
+      if (w.update()) changed = true;
+    }
+  };
+
+  Watcher.prototype.on = function on(obj, prop, fn) {
+    var _this = this;
     var lastVal = obj[prop];
     var watch = {
       update: function update() {
@@ -16,29 +35,12 @@ var Watcher = (function(){
       prop: prop,
       fn: fn
     };
-    Watcher.watches.push(watch);
+
+    _this.watches.add(watch);
     return function() {
-      Watcher.watches.delete(watch);
+      _this.watches.delete(watch);
     };
-  }
-
-  function digest() {
-    var changed;
-    for (var i = 0; i < 50; ++i) {
-      changed = false;
-      Watcher.watches.forEach(changer);
-      if (!changed) return;
-    }
-    console.warn("Digest didn't settle");
-    function changer(w) {
-      if (w.update()) changed = true;
-    }
-  }
-
-  var Watcher = {
-    watches: [],
-    on: on,
-    digest: digest
   };
+
   return Watcher;
 })();

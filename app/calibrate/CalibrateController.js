@@ -1,7 +1,11 @@
 var CalibrateController = (function(){
+
+  var CORRECTION = mat4.setScaleXYZ(mat4.create(), 1, -1, -1);
+
   function CalibrateController(renderer, app) {
-    this.app = app;
     this.constructor.superclass.call(this);
+
+    this.app = app;
     this.viewmodel = new CalibrateViewmodel();
     this.presenter = new CalibratePresenter(renderer, this.viewmodel);
 
@@ -59,6 +63,8 @@ var CalibrateController = (function(){
 
       if (this.pointingPos) {
         mat4.vecmul(vm.target, this.pointingPos, this.world_to_model);
+        // correction
+        vm.target[1] *= -1;
         vm.radius = -3 * vm.target[2];
         vm.target[2] = 0;
       }
@@ -111,7 +117,8 @@ var CalibrateController = (function(){
     this.calibrationFinished = true;
     var modelM = myMakeMx(this.pointPairs[0][0], this.pointPairs[1][0], this.pointPairs[2][0], false);
     var worldM = myMakeMx(this.pointPairs[0][1], this.pointPairs[1][1], this.pointPairs[2][1], true);
-    mat4.lmul(mat4.invert(this.world_to_model , worldM), modelM);
+    mat4.lmul(mat4.invert(this.world_to_model, worldM), modelM);
+    mat4.lmul(this.world_to_model, CORRECTION);
 
     this.app.notifyCalibrated(this.world_to_model);
   };
