@@ -66,7 +66,6 @@ var App = (function() {
 
   App.prototype.notifyClicked = function(x, y) {
     var _this = this;
-    _this.global.magic.actualize();
     switch (_this.state) {
       case 0:
         _this.state = 1;

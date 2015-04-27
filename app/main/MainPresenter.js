@@ -106,11 +106,10 @@ var MainPresenter = (function() {
     this.datgui.add(this.magic, 'screen_width', 0.1, 1.5, 0.01);
     this.datgui.add(this.magic, 'screen_height', 0.1, 1.5, 0.01);
     this.datgui.add(this.magic, 'screen_distance', 0.1, 4.0, 0.01);
+    this.datgui.add(this.magic, 'eye_distance', 0, 0.5);
 
     this.datgui.add(opts, 'contrast', -1, 1, 0.1);
     this.datgui.add(opts, 'deghost', 0, 1, 0.05);
-    this.datgui.add(opts, 'screenDistance', 0.01, 10);
-    this.datgui.add(opts, 'eyeDistance', 0, 0.5);
     this.datgui.add(opts, 'mode', Object.keys(SCHEMES));
     this.datgui.add(opts, 'rotating');
   };
@@ -133,7 +132,7 @@ var MainPresenter = (function() {
   MainPresenter.prototype.render = function(time) {
     this.watcher.digest();
 
-    var cam_distance = this.magic.screen_distance - this.scene.gridSize;
+    var cam_distance = 10 * this.scene.gridSize;
     var cam_angle;
 
     if (this.viewmodel.options.rotating) {
@@ -142,17 +141,17 @@ var MainPresenter = (function() {
        cam_angle = this.viewmodel.options.angle;
     }
 
-    this.camera.position.y = this.magic.screen_distance * 0.25;
+    this.camera.position.y = this.scene.gridSize * 2.5;
     this.camera.position.z = cam_distance * Math.cos(cam_angle);
     this.camera.position.x = cam_distance * Math.sin(cam_angle);
-    this.vecLookAt.y = this.magic.screen_distance * 0.03;
+    this.vecLookAt.y = this.scene.gridSize * 0.3;
     this.camera.lookAt(this.vecLookAt);
 
     var ana = this.scene.anaglyph, opt = this.viewmodel.options;
     ana.deghost = opt.deghost;
     ana.contrast = opt.contrast;
-    ana.eyeDistance = opt.eyeDistance;
-    ana.screenDistance = opt.screenDistance;
+    ana.eyeDistance = this.magic.eye_distance;
+    ana.screenDistance = this.magic.screen_distance;
 
 
     if (this.viewmodel.system) {

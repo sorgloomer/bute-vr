@@ -5,6 +5,7 @@ var Magic = (function() {
     this.screen_width = 0.466;
     this.screen_height = 0.262;
     this.screen_distance = 1.0;
+    this.eye_distance = 0.15;
 
     this.aspect = 0;
     this.camera_half_horizontal_fov_tan = 0;

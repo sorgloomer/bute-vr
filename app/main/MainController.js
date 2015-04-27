@@ -71,6 +71,8 @@ var MainController = (function() {
   };
 
   MainController.prototype.update = function(time, dt) {
+    this.app.global.magic.actualize();
+    this.viewmodel.updateCamera(this.app.global.magic);
     this._updateTransform();
     ArrayPresenter.update(
       this.TipDefinition,
