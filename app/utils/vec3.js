@@ -1,4 +1,12 @@
 var vec3 = (function() {
+  function array(n) {
+    var buffer = new Float32Array(3 * n);
+    var result = new Array(n);
+    for (var i = 0; i < result.length; i++) {
+      result[i] = buffer.subarray(3 * i, 3 * i + 3);
+    }
+    return result;
+  }
   function create() {
     return new Float32Array(3);
   }
@@ -53,17 +61,23 @@ var vec3 = (function() {
   function lscale(x, s) { return scale(x, x, s); }
   function lcross(a, b) { return cross(a, a, b); }
 
+  function len2(vec) {
+    return dot(vec, vec);
+  }
   function len(vec) {
-    return Math.sqrt(dot(vec, vec));
+    return Math.sqrt(len2(vec));
   }
   function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
   }
-  function dist(a, b) {
+  function dist2(a, b) {
     var dx = b[0] - a[0];
     var dy = b[1] - a[1];
     var dz = b[2] - a[2];
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    return dx * dx + dy * dy + dz * dz;
+  }
+  function dist(a, b) {
+    return Math.sqrt(dist2(a, b));
   }
 
   function normalize(to, a) {
@@ -73,12 +87,22 @@ var vec3 = (function() {
     return normalize(a, a);
   }
 
+  function scaleAdd(a, b, scale) {
+    for (var i = 0; i < a.length; i++) {
+      a[i] += b[i] * scale;
+    }
+  }
+
+
   return {
+    array: array,
     create: create,
     set: set,
     setXYZ: setXYZ,
     clone: clone,
+    len2: len2,
     len: len,
+    dist2: dist2,
     dist: dist,
     dot: dot,
     copy: copy,
@@ -92,6 +116,8 @@ var vec3 = (function() {
     lsub: lsub,
     lscale: lscale,
     lcross: lcross,
-    lnormalize: lnormalize
+    lnormalize: lnormalize,
+
+    scaleAdd: scaleAdd
   };
 })();

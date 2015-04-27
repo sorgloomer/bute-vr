@@ -17,14 +17,19 @@
   function scheduleCycle() {
     self.requestAnimationFrame(cycle);
   }
+  var ltime = 0;
   function cycle() {
     scheduleCycle();
     var time = app.time();
-    app.update(time);
-    app.render(time);
+    var dt = time - ltime;
+    if (dt > 0.2) dt = 0.2;
+    app.update(time, dt);
+    app.render(time, dt);
+    ltime = time;
   }
   function start() {
     init();
+    ltime = app.time();
     scheduleCycle();
     app.start();
   }

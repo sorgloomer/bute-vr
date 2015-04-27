@@ -13,7 +13,7 @@ var MainPresenter = (function() {
   var PointDefinition = {
     make: function(src, presenterScene) {
       var dst = {
-        sphere: new THREE.Mesh(presenterScene.geomSphere, presenterScene.material),
+        sphere: new THREE.Mesh(presenterScene.geomSphere, presenterScene.ballMaterial),
         arrow: new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 0.1, 0xffffff)
       };
       presenterScene.scene.add(dst.sphere);
@@ -30,18 +30,46 @@ var MainPresenter = (function() {
       dst.arrow.position.set(src[0], 0, src[2]);
     }
   };
+  var BallDefinition = {
+    make: function(src, presenterScene) {
+      var dst = new THREE.Mesh(presenterScene.geomSphere, presenterScene.ballMaterial);
+      presenterScene.scene.add(dst);
+      return dst;
+    },
+    remove: function(src, dst, presenterScene) {
+      presenterScene.scene.remove(dst);
+    },
+    update: function(src, dst, presenterScene) {
+      dst.position.set(src.pos[0], src.pos[1], src.pos[2]);
+      var temp = src.radius / SPHERE_RAD;
+      dst.scale.set(temp, temp, temp);
+    }
+  };
 
+  function getEnvMapUrls() {
+    var path = "main/cube/";
+    var format = '.jpg';
+    var urls = [
+      path + 'posx' + format, path + 'negx' + format,
+      path + 'posy' + format, path + 'negy' + format,
+      path + 'posz' + format, path + 'negz' + format
+    ];
+    return urls;
+  }
 
   function MainPresenterScene(renderer, magic) {
     this.renderer = renderer;
     this.scene = new THREE.Scene();
-    this.geomSphere = new THREE.SphereGeometry(SPHERE_RAD);
-    this.material = new THREE.MeshBasicMaterial({ color: 0x7777ff });
+    this.geomSphere = new THREE.SphereGeometry(SPHERE_RAD, 24, 15);
+
+    this.textureCube = THREE.ImageUtils.loadTextureCube(getEnvMapUrls());
+    this.ballMaterial = new THREE.MeshBasicMaterial({ color: 0x99bbbb, envMap: this.textureCube });
 
     this.points = [];
+    this.balls = [];
 
     this.gridSize = 0.1;
-    this.grid = new THREE.GridHelper(this.gridSize, 0.1 * this.gridSize - EPS);
+    this.grid = new THREE.GridHelper(this.gridSize, 0.2 * this.gridSize - EPS);
     this.grid.position.y = 0;
     this.scene.add(this.grid);
 
@@ -84,6 +112,7 @@ var MainPresenter = (function() {
     this.datgui.add(opts, 'screenDistance', 0.01, 10);
     this.datgui.add(opts, 'eyeDistance', 0, 0.5);
     this.datgui.add(opts, 'mode', Object.keys(SCHEMES));
+    this.datgui.add(opts, 'rotating');
   };
 
   MainPresenter.prototype._initWatches = function() {
@@ -103,8 +132,16 @@ var MainPresenter = (function() {
 
   MainPresenter.prototype.render = function(time) {
     this.watcher.digest();
+
     var cam_distance = this.magic.screen_distance - this.scene.gridSize;
-    var cam_angle = time * 0.16;
+    var cam_angle;
+
+    if (this.viewmodel.options.rotating) {
+      this.viewmodel.options.angle = cam_angle = time * 0.16;
+    } else {
+       cam_angle = this.viewmodel.options.angle;
+    }
+
     this.camera.position.y = this.magic.screen_distance * 0.25;
     this.camera.position.z = cam_distance * Math.cos(cam_angle);
     this.camera.position.x = cam_distance * Math.sin(cam_angle);
@@ -117,6 +154,10 @@ var MainPresenter = (function() {
     ana.eyeDistance = opt.eyeDistance;
     ana.screenDistance = opt.screenDistance;
 
+
+    if (this.viewmodel.system) {
+      ArrayPresenter.update(BallDefinition, this.viewmodel.system.balls, this.scene.balls, this.scene);
+    }
     ArrayPresenter.update(PointDefinition, this.viewmodel.points, this.scene.points, this.scene);
     this.scene.anaglyph.render(this.scene.scene, this.camera);
   };

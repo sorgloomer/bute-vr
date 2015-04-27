@@ -36,11 +36,11 @@ var App = (function() {
   App.prototype.leapFrame = function(frame, time) {
     if (this.controller) this.controller.leapFrame(frame, time);
   };
-  App.prototype.update = function(time) {
-    if (this.controller && this.controller.update) this.controller.update(time);
+  App.prototype.update = function(time, dt) {
+    if (this.controller && this.controller.update) this.controller.update(time, dt);
   };
-  App.prototype.render = function (time) {
-    if (this.controller && this.controller.presenter) this.controller.presenter.render(time);
+  App.prototype.render = function (time, dt) {
+    if (this.controller && this.controller.presenter) this.controller.presenter.render(time, dt);
   };
   App.prototype.start = function() {
     this.startTime = Date.now();

@@ -6,6 +6,8 @@ var AppGlobals = (function() {
     this.screenDistance = 0.35;
     this.eyeDistance = 0.18;
     this.mode = 'red-cyan';
+    this.rotating = true;
+    this.angle = 0;
   }
 
   function AppGlobals() {

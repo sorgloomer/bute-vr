@@ -1,6 +1,22 @@
 var MainController = (function() {
 
   var TEMP_MAT = mat4.create();
+  // It seems that the real speed of the fingertips is too fast,
+  // maybe because of the trembling. Speed is multiplied by this factor before
+  // physics calculation.
+  var SPEED_FACTOR = 0.5;
+
+  function createBallSystem() {
+    var result = new BallSystem();
+    var r = 0.03, y = 0.03;
+    for (var i = 0; i < 5; i++) {
+      result.balls.push(new Ball([0, y, 0], r));
+      y += 2 * r;
+      r -= 0.005;
+    }
+    result.balls[0].pos[0] -= result.balls[0].radius * 1e-7;
+    return result;
+  }
 
   function MainController(renderer, app) {
     this.constructor.superclass.call(this);
@@ -14,12 +30,26 @@ var MainController = (function() {
     this.presenter = new MainPresenter(renderer, this.viewmodel, app.global.magic);
 
     this._points = [];
+    this.viewmodel.system = this._ballSystem = createBallSystem();
 
     var _this = this;
     _this.TipDefinition = {
       make: vec3.create,
       update: function(src, dst) {
         mat4.vecmul(dst, src, _this.reality_to_model);
+      },
+      remove: noop
+    };
+    _this.InterfereDefinition = {
+      make: function() {
+        var ball =  new Ball([0, 0, 0], 0.005);
+        ball.imass = 0;
+        return ball;
+      },
+      update: function(src, dst, idt) {
+        vec3.sub(dst.vel, src, dst.pos);
+        vec3.lscale(dst.vel, SPEED_FACTOR  * idt);
+        vec3.set(dst.pos, src);
       },
       remove: noop
     };
@@ -40,9 +70,18 @@ var MainController = (function() {
 
   };
 
-  MainController.prototype.update = function(time) {
+  MainController.prototype.update = function(time, dt) {
     this._updateTransform();
-    ArrayPresenter.update(this.TipDefinition, this._points, this.viewmodel.points);
+    ArrayPresenter.update(
+      this.TipDefinition,
+      this._points,
+      this.viewmodel.points);
+    ArrayPresenter.update(
+      this.InterfereDefinition,
+      this.viewmodel.points,
+      this._ballSystem.obstacles,
+      1/dt);
+    this._ballSystem.update(dt);
   };
 
   MainController.prototype._updateTransform = function() {
