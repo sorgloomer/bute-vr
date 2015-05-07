@@ -73,6 +73,23 @@ var MainPresenter = (function() {
     this.grid.position.y = 0;
     this.scene.add(this.grid);
 
+
+
+    // Skybox
+    this.boxShader = THREE.ShaderLib[ "cube" ];
+    this.boxShader.uniforms[ "tCube" ].value = this.textureCube;
+
+    this.skyboxMaterial = new THREE.ShaderMaterial({
+      fragmentShader: this.boxShader.fragmentShader,
+      vertexShader: this.boxShader.vertexShader,
+      uniforms: this.boxShader.uniforms,
+      side: THREE.BackSide
+    });
+
+    this.skyboxMesh = new THREE.Mesh( new THREE.BoxGeometry( 200, 200, 200 ), this.skyboxMaterial );
+    this.scene.add( this.skyboxMesh );
+
+
     this.anaglyph = new THREE.AnaglyphEffect(renderer, 1, 1);
     this.anaglyph.screenDistance = 500;
   }
@@ -132,11 +149,11 @@ var MainPresenter = (function() {
   MainPresenter.prototype.render = function(time) {
     this.watcher.digest();
 
-    var cam_distance = 10 * this.scene.gridSize;
+    var cam_distance = 0.75 * this.magic.screen_distance;
     var cam_angle;
 
     if (this.viewmodel.options.rotating) {
-      this.viewmodel.options.angle = cam_angle = time * 0.16;
+      this.viewmodel.options.angle = cam_angle = time * 0.03;
     } else {
        cam_angle = this.viewmodel.options.angle;
     }

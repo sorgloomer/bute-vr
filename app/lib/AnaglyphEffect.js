@@ -50,8 +50,8 @@ THREE.AnaglyphEffect = (function(THREE) {
     BlueYellow: {
       name: 'BlueYellow',
       left: [
-        0.70, 0.15, 0.15, 0,
-        0.15, 0.70, 0.15, 0,
+        1.00, 0.00, 0.00, 0,
+        0.00, 1.00, 0.00, 0,
         0.00, 0.00, 0.00, 0,
         0.00, 0.00, 0.00, 1
       ],

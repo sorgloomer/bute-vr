@@ -14,8 +14,8 @@ var MainViewmodel = (function() {
   MainViewmodel.prototype.updateCamera = function(magic) {
     var camera = this.camera;
     camera.fov = magic.camera_vertical_fov;
-    camera.near = magic.screen_distance * 0.01;
-    camera.far = magic.screen_distance * 10;
+    camera.near = magic.screen_distance * 0.1;
+    camera.far = magic.screen_distance * 1000;
     camera.updateProjectionMatrix();
   };
 

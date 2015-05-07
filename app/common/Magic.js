@@ -1,11 +1,12 @@
 var Magic = (function() {
 
   function Magic() {
+    var ASPECT = 0.466 / 0.262;
     this.magic_scale = 0.52;
-    this.screen_width = 0.466;
-    this.screen_height = 0.262;
-    this.screen_distance = 1.0;
-    this.eye_distance = 0.15;
+    this.screen_height = 0.210;
+    this.screen_width = this.screen_height * ASPECT;
+    this.screen_distance = 0.40;
+    this.eye_distance = 0.06;
 
     this.aspect = 0;
     this.camera_half_horizontal_fov_tan = 0;
