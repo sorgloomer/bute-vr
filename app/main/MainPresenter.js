@@ -120,10 +120,10 @@ var MainPresenter = (function() {
   MainPresenter.prototype._initDatGui = function() {
     var opts = this.viewmodel.options;
     this.datgui = new dat.GUI();
-    this.datgui.add(this.magic, 'screen_width', 0.1, 1.5, 0.01);
+    // this.datgui.add(this.magic, 'screen_width', 0.1, 1.5, 0.01);
     this.datgui.add(this.magic, 'screen_height', 0.1, 1.5, 0.01);
     this.datgui.add(this.magic, 'screen_distance', 0.1, 4.0, 0.01);
-    this.datgui.add(this.magic, 'eye_distance', 0, 0.5);
+    this.datgui.add(this.magic, 'eye_distance', 0, 0.15);
 
     this.datgui.add(opts, 'contrast', -1, 1, 0.1);
     this.datgui.add(opts, 'deghost', 0, 1, 0.05);
